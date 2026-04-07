@@ -20,7 +20,7 @@ variable "do_token" {
 
 variable "prefix" {
   type    = string
-  default = "chernii-dev"
+  default = "chernii-0704"
 }
 
 variable "region" {
@@ -40,7 +40,6 @@ resource "digitalocean_droplet" "node" {
   size     = "s-2vcpu-4gb"
   image    = "ubuntu-24-04-x64"
   vpc_uuid = digitalocean_vpc.main.id
-
   ssh_keys = [data.digitalocean_ssh_key.mykey.id]
 
   tags = ["${var.prefix}-node"]
@@ -77,6 +76,12 @@ resource "digitalocean_firewall" "main" {
 
   outbound_rule {
     protocol              = "tcp"
+    port_range            = "1-65535"
+    destination_addresses = ["0.0.0.0/0"]
+  }
+
+  outbound_rule {
+    protocol              = "udp"
     port_range            = "1-65535"
     destination_addresses = ["0.0.0.0/0"]
   }
