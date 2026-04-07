@@ -18,11 +18,6 @@ variable "do_token" {
   sensitive = true
 }
 
-variable "ssh_key_ids" {
-  type        = list(string)
-  description = "SSH key IDs"
-}
-
 variable "prefix" {
   type    = string
   default = "chernii"
@@ -45,7 +40,10 @@ resource "digitalocean_droplet" "node" {
   size     = "s-2vcpu-4gb"
   image    = "ubuntu-24-04-x64"
   vpc_uuid = digitalocean_vpc.main.id
-  ssh_keys = var.ssh_key_ids
+
+  ssh_keys = [data.digitalocean_ssh_key.mykey.id]
+
+  tags = ["${var.prefix}-node"]
 }
 
 resource "digitalocean_firewall" "main" {
@@ -82,4 +80,8 @@ resource "digitalocean_firewall" "main" {
     port_range            = "1-65535"
     destination_addresses = ["0.0.0.0/0"]
   }
+}
+
+data "digitalocean_ssh_key" "mykey" {
+  name = "chernii-key"
 }
