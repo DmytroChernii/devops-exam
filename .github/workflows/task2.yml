@@ -1,4 +1,5 @@
 name: task2-ansible
+
 on:
   workflow_dispatch:
     inputs:
@@ -9,9 +10,11 @@ on:
 jobs:
   ansible:
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: task2
+
     env:
       DROPLET_IP: ${{ github.event.inputs.droplet_ip }}
 
@@ -22,18 +25,22 @@ jobs:
       - name: Install Ansible
         run: pip install ansible
 
-     - name: Setup SSH key
+      - name: Setup SSH key
         run: |
+          mkdir -p ~/.ssh
           printf '%s' "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/ssh_key
           chmod 600 /tmp/ssh_key
-          wc -c /tmp/ssh_key
-          ssh-keygen -l -f /tmp/ssh_key || echo "KEY INVALID"
+          ssh-keyscan -H $DROPLET_IP >> ~/.ssh/known_hosts
 
       - name: Ansible check (dry-run)
         run: |
-          ansible-playbook -i inventory/hosts.yml playbook.yml --check
-        continue-on-error: false
+          ansible-playbook -i inventory/hosts.yml playbook.yml \
+          --private-key /tmp/ssh_key \
+          --user root \
+          --check
 
       - name: Ansible apply
         run: |
-          ansible-playbook -i inventory/hosts.yml playbook.yml
+          ansible-playbook -i inventory/hosts.yml playbook.yml \
+          --private-key /tmp/ssh_key \
+          --user root
