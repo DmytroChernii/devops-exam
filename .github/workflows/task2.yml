@@ -1,43 +1,30 @@
 name: task2-ansible
-
 on:
   workflow_dispatch:
     inputs:
       droplet_ip:
         description: 'IP адреса дроплету'
         required: true
-
 jobs:
   ansible:
     runs-on: ubuntu-latest
-
     defaults:
       run:
         working-directory: task2
-
     env:
       DROPLET_IP: ${{ github.event.inputs.droplet_ip }}
       ANSIBLE_HOST_KEY_CHECKING: 'False'
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Install Ansible
-        run: |
-          python3 -m pip install --upgrade pip
-          pip install ansible
-
+        run: pip install ansible
       - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
-          # Використовуємо echo для збереження структури приватного ключа
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/ssh_key
           chmod 600 /tmp/ssh_key
-          # Додаємо налаштування, щоб SSH не питав підтвердження хоста
           echo "StrictHostKeyChecking no" >> ~/.ssh/config
-          echo "UserKnownHostsFile /dev/null" >> ~/.ssh/config
-
       - name: Ansible check (dry-run)
         run: |
           ansible-playbook -i inventory/hosts.yml playbook.yml \
@@ -45,20 +32,9 @@ jobs:
           --user root \
           --extra-vars "ansible_host=$DROPLET_IP" \
           --check
-
       - name: Ansible apply
         run: |
           ansible-playbook -i inventory/hosts.yml playbook.yml \
           --private-key /tmp/ssh_key \
           --user root \
           --extra-vars "ansible_host=$DROPLET_IP"
-
-
-
-
-
-
-
-
-
-          
