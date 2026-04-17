@@ -23,10 +23,6 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
-      - name: Import existing VPC
-        run: terraform import digitalocean_vpc.main 8838db4c-3f79-413f-94b9-2148e5e138f4
-        continue-on-error: true
-
       - name: Terraform Plan
         run: terraform plan -detailed-exitcode
 
