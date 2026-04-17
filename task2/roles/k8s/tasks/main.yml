@@ -1,0 +1,43 @@
+- name: Install dependencies
+  apt:
+    name:
+      - curl
+      - apt-transport-https
+      - ca-certificates
+      - conntrack
+      - socat
+    state: present
+    update_cache: true
+
+- name: Install kubectl
+  shell: |
+    curl -LO "https://dl.k8s.io/release/$(curl -sL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    chmod +x kubectl
+    mv kubectl /usr/local/bin/kubectl
+  args:
+    creates: /usr/local/bin/kubectl
+
+- name: Install Minikube
+  shell: |
+    curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+    install minikube-linux-amd64 /usr/local/bin/minikube
+  args:
+    creates: /usr/local/bin/minikube
+
+- name: Install Helm
+  shell: |
+    curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+  args:
+    creates: /usr/local/bin/helm
+
+- name: Start Minikube as root
+  shell: minikube start --driver=none
+  environment:
+    MINIKUBE_HOME: /root
+  args:
+    creates: /root/.minikube/started
+
+- name: Enable Minikube dashboard proxy
+  shell: nohup kubectl proxy --address='0.0.0.0' --port=8001 --accept-hosts='.*' &
+  async: 10
+  poll: 0
