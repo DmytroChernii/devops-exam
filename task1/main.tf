@@ -30,9 +30,8 @@ variable "prefix" {
 
 variable "region" {
   type    = string
-  default = "fra1"
+  default = "ams3"
 }
-
 resource "digitalocean_vpc" "main" {
   name     = "${var.prefix}-network"
   region   = var.region
