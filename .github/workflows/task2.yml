@@ -1,0 +1,37 @@
+name: task2-ansible
+on:
+  workflow_dispatch:
+    inputs:
+      droplet_ip:
+        description: 'IP адреса дроплету'
+        required: true
+
+jobs:
+  ansible:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: task2
+    env:
+      DROPLET_IP: ${{ github.event.inputs.droplet_ip }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Ansible
+        run: pip install ansible
+
+      - name: Setup SSH key
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/ssh_key
+          chmod 600 /tmp/ssh_key
+
+      - name: Ansible check (dry-run)
+        run: |
+          ansible-playbook -i inventory/hosts.yml playbook.yml --check
+        continue-on-error: false
+
+      - name: Ansible apply
+        run: |
+          ansible-playbook -i inventory/hosts.yml playbook.yml
