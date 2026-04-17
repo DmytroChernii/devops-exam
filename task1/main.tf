@@ -25,7 +25,7 @@ variable "do_token" {
 
 variable "prefix" {
   type    = string
-  default = "chernii-0704"
+  default = "chernii-0704-v2"
 }
 
 variable "region" {
