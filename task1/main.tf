@@ -99,7 +99,3 @@ resource "digitalocean_spaces_bucket" "main" {
   region = var.region
   acl    = "private"
 }
-import {
-  to = digitalocean_vpc.main
-  id = "8838db4c-3f79-413f-94b9-2148e5e138f4"
-}
