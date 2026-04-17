@@ -17,30 +17,48 @@ jobs:
 
     env:
       DROPLET_IP: ${{ github.event.inputs.droplet_ip }}
+      ANSIBLE_HOST_KEY_CHECKING: 'False'
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Install Ansible
-        run: pip install ansible
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install ansible
 
       - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
-          printf '%s' "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/ssh_key
+          # Використовуємо echo для збереження структури приватного ключа
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/ssh_key
           chmod 600 /tmp/ssh_key
-          ssh-keyscan -H $DROPLET_IP >> ~/.ssh/known_hosts
+          # Додаємо налаштування, щоб SSH не питав підтвердження хоста
+          echo "StrictHostKeyChecking no" >> ~/.ssh/config
+          echo "UserKnownHostsFile /dev/null" >> ~/.ssh/config
 
       - name: Ansible check (dry-run)
         run: |
           ansible-playbook -i inventory/hosts.yml playbook.yml \
           --private-key /tmp/ssh_key \
           --user root \
+          --extra-vars "ansible_host=$DROPLET_IP" \
           --check
 
       - name: Ansible apply
         run: |
           ansible-playbook -i inventory/hosts.yml playbook.yml \
           --private-key /tmp/ssh_key \
-          --user root
+          --user root \
+          --extra-vars "ansible_host=$DROPLET_IP"
+
+
+
+
+
+
+
+
+
+          
