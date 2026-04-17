@@ -24,11 +24,8 @@ jobs:
 
       - name: Setup SSH key
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/ssh_key
+          printf '%s' "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/ssh_key
           chmod 600 /tmp/ssh_key
-          ssh-keygen -l -f /tmp/ssh_key
-          cat /tmp/ssh_key | head -1
-          cat /tmp/ssh_key | tail -1
 
       - name: Ansible check (dry-run)
         run: |
