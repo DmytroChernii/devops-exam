@@ -1,10 +1,16 @@
 terraform {
   required_version = ">= 1.5.0"
-
   required_providers {
     digitalocean = {
       source  = "digitalocean/digitalocean"
       version = "~> 2.37"
+    }
+  }
+
+  cloud {
+    organization = "Univer"
+    workspaces {
+      name = "devops-exam-task1"
     }
   }
 }
