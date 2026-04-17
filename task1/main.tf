@@ -25,7 +25,7 @@ variable "do_token" {
 
 variable "prefix" {
   type    = string
-  default = "chernii-0704-v2"
+  default = "chernii-0704"
 }
 
 variable "region" {
@@ -34,7 +34,7 @@ variable "region" {
 }
 
 resource "digitalocean_vpc" "main" {
-  name     = "${var.prefix}-vpc"
+  name     = "${var.prefix}-network"
   region   = var.region
   ip_range = "10.10.10.0/24"
 }
