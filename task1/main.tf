@@ -36,7 +36,7 @@ variable "region" {
 resource "digitalocean_vpc" "main" {
   name     = "${var.prefix}-network"
   region   = var.region
-  ip_range = "10.10.20.0/24"
+  ip_range = "10.30.0.0/24"
 }
 resource "digitalocean_droplet" "node" {
   name     = "${var.prefix}-node"
