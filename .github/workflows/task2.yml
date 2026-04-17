@@ -22,10 +22,12 @@ jobs:
       - name: Install Ansible
         run: pip install ansible
 
-      - name: Setup SSH key
+     - name: Setup SSH key
         run: |
           printf '%s' "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/ssh_key
           chmod 600 /tmp/ssh_key
+          wc -c /tmp/ssh_key
+          ssh-keygen -l -f /tmp/ssh_key || echo "KEY INVALID"
 
       - name: Ansible check (dry-run)
         run: |
