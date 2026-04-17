@@ -6,7 +6,6 @@ terraform {
       version = "~> 2.37"
     }
   }
-
   cloud {
     organization = "Univer"
     workspaces {
@@ -47,13 +46,11 @@ resource "digitalocean_droplet" "node" {
   image    = "ubuntu-24-04-x64"
   vpc_uuid = digitalocean_vpc.main.id
   ssh_keys = [data.digitalocean_ssh_key.mykey.id]
-
-  tags = ["${var.prefix}-node"]
+  tags     = ["${var.prefix}-node"]
 }
 
 resource "digitalocean_firewall" "main" {
-  name = "${var.prefix}-firewall"
-
+  name        = "${var.prefix}-firewall"
   droplet_ids = [digitalocean_droplet.node.id]
 
   inbound_rule {
@@ -61,31 +58,26 @@ resource "digitalocean_firewall" "main" {
     port_range       = "22"
     source_addresses = ["0.0.0.0/0"]
   }
-
   inbound_rule {
     protocol         = "tcp"
     port_range       = "80"
     source_addresses = ["0.0.0.0/0"]
   }
-
   inbound_rule {
     protocol         = "tcp"
     port_range       = "443"
     source_addresses = ["0.0.0.0/0"]
   }
-
   inbound_rule {
     protocol         = "tcp"
     port_range       = "8000-8003"
     source_addresses = ["0.0.0.0/0"]
   }
-
   outbound_rule {
     protocol              = "tcp"
     port_range            = "1-65535"
     destination_addresses = ["0.0.0.0/0"]
   }
-
   outbound_rule {
     protocol              = "udp"
     port_range            = "1-65535"
@@ -95,4 +87,10 @@ resource "digitalocean_firewall" "main" {
 
 data "digitalocean_ssh_key" "mykey" {
   name = "chernii-key"
+}
+
+resource "digitalocean_spaces_bucket" "main" {
+  name   = "${var.prefix}-bucket"
+  region = var.region
+  acl    = "private"
 }
