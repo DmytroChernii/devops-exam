@@ -34,11 +34,10 @@ variable "region" {
 }
 
 resource "digitalocean_vpc" "main" {
-  name     = "chernii-vpc"
+  name     = "${var.prefix}-network"
   region   = var.region
-  ip_range = "10.10.10.0/24"
+  ip_range = "10.10.20.0/24"
 }
-
 resource "digitalocean_droplet" "node" {
   name     = "${var.prefix}-node"
   region   = var.region
